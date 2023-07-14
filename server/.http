@@ -1,0 +1,27 @@
+###
+GET http://localhost:5000/users
+
+###
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "name": "Jonas",
+    "surname": "Jonaitis",
+    "email": "jonas@jonaitis.lt",
+    "age": 19
+}
+
+###
+PUT http://localhost:5000/users/64ae5d32f888b085c214c13b
+Content-Type: application/json
+
+{
+    "name": "Jonas",
+    "surname": "Jonaitis",
+    "email": "jonas@jonaitis.lt",
+    "age": 19
+}
+
+###
+DELETE http://localhost:5000/users/64ad34bffb9ab8bdcaa385d0
