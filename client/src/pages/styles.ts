@@ -17,8 +17,13 @@ export const ButtonWrapper = styled.div`
   margin: auto;
 
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  div {
+    width: 70%;
+    padding-left: 10px;
+  }
 `;
 
 export const StyledErrorMessage = styled.p`

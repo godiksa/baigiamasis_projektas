@@ -5,7 +5,7 @@ import { COLOR } from '../../../shared/theme/types';
 
 interface IInputProps {
   type: 'text' | 'number' | 'email';
-  id: string;
+  id?: string;
   action?: (e: any) => void;
   value?: string | number;
   required?: boolean;

@@ -8,8 +8,14 @@ import Button from '../components/atoms/Button';
 import { COLOR } from '../shared/theme/types';
 import Form from '../components/molecules/Form';
 import Table from '../components/molecules/Table/Table';
-import { ButtonWrapper, PageWrapper, StyledErrorMessage, StyledFooterContainer } from './styles';
+import {
+  ButtonWrapper,
+  PageWrapper,
+  StyledErrorMessage,
+  StyledFooterContainer,
+} from './styles';
 import FullScreenLoader from '../components/atoms/FullScreenLoader';
+import Input from '../components/atoms/Input';
 
 type User = ApiUser & {
   _id: string;
@@ -23,20 +29,43 @@ const UsersPage = () => {
   const [usersToDisplay, setUsersToDisplay] = useState<User[] | []>([]);
   const [openFormModal, setOpenFormModal] = useState(false);
 
+  const [searchValue, setSearchValue] = useState('');
+  const [filterUsers, setFilterUsers] = useState<User[] | []>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<unknown>(null);
-  // const isLoadingInitialLoad = isLoading && usersToDisplay.length === 0;
-  // const isErrorInitialLoad = !!error && usersToDisplay.length === 0;
 
   useEffect(() => {
-    getUsers1();
+    getUsersInitial();
   }, []);
 
   useEffect(() => {
-    getUsers();
-  }, [message]);
+    if (searchValue) {
+      const itemsAfterSearch = usersToDisplay.filter((user) => {
+        return (
+          user.name
+            .toString()
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          user.surname
+            .toString()
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          user.email
+            .toString()
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          user.age.toString().toLowerCase().includes(searchValue.toLowerCase())
+        );
+      });
+      setFilterUsers(itemsAfterSearch);
+    } else {
+      getUsers();
+      setFilterUsers(usersToDisplay);
+    }
+  }, [message, searchValue]);
 
-  const getUsers1 = async () => {
+  const getUsersInitial = async () => {
     setIsLoading(true);
     setError(null);
 
@@ -53,13 +82,16 @@ const UsersPage = () => {
   const getUsers = async () => {
     const users = await API.getUsers();
     displayUsers(users);
+    console.log(users);
   };
 
   const displayUsers = (users: User[]) => {
     if (users.length) {
       setUsersToDisplay(users);
+      setFilterUsers(users);
     } else {
       setUsersToDisplay([]);
+      setFilterUsers([]);
     }
   };
 
@@ -77,7 +109,7 @@ const UsersPage = () => {
     setMessage(addedUser.message);
     setTimeout(() => {
       setMessage('');
-    }, 5000);
+    }, 4000);
   };
 
   const updateUsers = async (userId: string, updatedUserData: ApiUser) => {
@@ -89,13 +121,20 @@ const UsersPage = () => {
     const res = await API.deleteUser(userId);
 
     setMessage(res.message);
-    setTimeout(() => setMessage(''), 5000);
+    setTimeout(() => setMessage(''), 4000);
   };
 
   return (
     <PageWrapper>
       <main>
         <ButtonWrapper>
+          <Input
+            type='text'
+            value={searchValue}
+            action={(e) => setSearchValue(e.target.value)}
+            icon={<i className='fa-solid fa-magnifying-glass'></i>}
+            placeholder='Paieška...'
+          />
           <Button
             text='Pridėti naują'
             type='button'
@@ -113,7 +152,7 @@ const UsersPage = () => {
         ) : (
           <div>
             <Table
-              data={usersToDisplay}
+              data={filterUsers}
               updatedValuesAction={(id, updatedUser) =>
                 updateUsers(id, updatedUser)
               }
@@ -124,7 +163,7 @@ const UsersPage = () => {
         )}
       </main>
       <StyledFooterContainer>
-      <Footer />
+        <Footer />
       </StyledFooterContainer>
     </PageWrapper>
   );
