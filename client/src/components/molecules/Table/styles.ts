@@ -37,6 +37,10 @@ export const StyledEmailSpan = styled.div`
   color: ${(props) => props.theme.palette.accent};
   cursor: pointer;
 
+  &.incorrect {
+    color: ${(props) => props.theme.palette.danger.dark};
+  }
+
   &:hover {
     text-decoration: underline;
     color: ${(props) => props.theme.palette.dark};

@@ -77,16 +77,23 @@ const Table = ({
     if (editableUser === userId) {
       const name =
         (
-          document.getElementById(`name-${userId}`) as unknown as HTMLElement
+          document.getElementById(`name-${userId}`) as HTMLElement
         ).textContent?.toString() || '';
       const surname =
         (
-          document.getElementById(`surname-${userId}`) as unknown as HTMLElement
+          document.getElementById(`surname-${userId}`) as HTMLElement
         ).textContent?.toString() || '';
-      const email =
-        (
-          document.getElementById(`email-${userId}`) as unknown as HTMLElement
-        ).textContent?.toString() || '';
+
+      const emailElement = document.getElementById(
+        `email-${userId}`
+      ) as HTMLElement;
+      const emailText = emailElement.textContent?.trim();
+
+      const email = emailText
+        ? emailText.includes('@')
+          ? emailText
+          : 'incorrect@email.com'
+        : 'empty@email.com';
 
       const ageElement = document.getElementById(
         `age-${userId}`
@@ -106,8 +113,8 @@ const Table = ({
       updatedValuesAction(userId, updatedUserData);
 
       ageElement.textContent = String(age);
+      emailElement.textContent = email;
     }
-
     if (deletableUser === userId) {
       deleteUserAction(userId);
       setCurrentPage(1);
@@ -158,7 +165,14 @@ const Table = ({
                   <StyledEmailSpan
                     suppressContentEditableWarning
                     id={`email-${user._id}`}
-                    className={user._id === editableUser ? 'editable' : ''}
+                    className={`${
+                      user._id === editableUser ? 'editable' : ''
+                    } ${
+                      user.email === 'incorrect@email.com' ||
+                      user.email === 'empty@email.com'
+                        ? 'incorrect'
+                        : ''
+                    }`}
                     contentEditable={user._id === editableUser ? true : false}
                   >
                     {user.email}
@@ -216,9 +230,7 @@ const Table = ({
               </div>
             ))
         ) : (
-          <StyledNoUsersMessage>
-            Vartotojų nerasta... Spauskite "Pridėti naują", kad sukūrti.
-          </StyledNoUsersMessage>
+          <StyledNoUsersMessage>Vartotojų nerasta...</StyledNoUsersMessage>
         )}
       </StyledTableWrapperDiv>
       <StyledPaginationContainer>
